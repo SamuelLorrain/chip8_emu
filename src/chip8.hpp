@@ -10,7 +10,7 @@ public:
     ~Chip8();
 
     void next();
-    uint16_t fetch_instruction();
+    uint16_t fetch_opcode();
 private:
     Memory* memory;
     Cpu* cpu;
