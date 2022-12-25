@@ -18,3 +18,11 @@ uint16_t Chip8::fetch_opcode() {
 }
 
 Chip8::~Chip8() {}
+
+Cpu* Chip8::get_cpu() {
+    return this->cpu;
+}
+
+Memory* Chip8::get_memory() {
+    return this->memory;
+}

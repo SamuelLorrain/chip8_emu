@@ -11,6 +11,8 @@ public:
 
     void next();
     uint16_t fetch_opcode();
+    Cpu* get_cpu();
+    Memory* get_memory();
 private:
     Memory* memory;
     Cpu* cpu;
