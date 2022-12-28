@@ -2,6 +2,7 @@
 #define INSTRUCTION_H
 
 #include <cstdint>
+#include "chip8.hpp"
 
 class Instruction {
     protected:
@@ -11,155 +12,150 @@ class Instruction {
         uint16_t addr;
         int byte;
         int nibble;
+
     public:
         Instruction();
-        inline void setX(int value);
-        inline void setY(int value);
-        inline void setI(int value);
-        inline void setAddr(int value);
-        inline void setByte(int value);
-        inline void setNibble(int value);
-        virtual void processInstruction(Chip8 chip8) = 0;
+        void set_x(int value);
+        void set_y(int value);
+        void set_i(int value);
+        void set_addr(int value);
+        void set_byte(int value);
+        void set_nibble(int value);
+        virtual void process_instruction(Chip8* chip8) = 0;
 };
 
-typedef instructionFlag int;
-Instruction decode_instruction(uint16_t instruction);
+Instruction* decode_instruction(uint16_t instruction);
 
 class CLS : public Instruction {
-    processInstruction(Chip8 chip8) {
-        // TODO Clear display
-    }
-}
+    public:
+        CLS();
+        void process_instruction(Chip8* chip8) override;
+};
 
-class RET : public Intruction {
-    processInstruction(Chip8 chip8) {
-        Cpu* cpu = chip8->getCpu();
-        cpu->set_program_counter_value(cpu->pop_stack());
-    }
-}
+class RET : public Instruction {
+    public:
+        RET();
+        void process_instruction(Chip8* chip8) override;
+};
 
 class JPnnn: public Instruction {
-    processInstruction(Chip8 chip8) {
-        Cpu* cpu = chip8->getCpu();
-        cpu->set_program_counter_value(this->addr);
-    }
-}
+    public:
+        JPnnn();
+        void process_instruction(Chip8* chip8) override; 
+};
 
 class CALLnnn : public Instruction {
-    processInstruction(Chip8 chip8) {
-        Cpu* cpu = chip8->getCpu();
-        cpu->push_stack(chip->get_program_counter_value());
-        cpu->set_program_counter_value(this->addr());
-    }
-}
+    public:
+        CALLnnn();
+        void process_instruction(Chip8* chip8) override; 
+};
 
 class SExb : public Instruction {
-    processInstruction(Chip8 chip8) {
-        Cpu* cpu = chip8->getCpu();
-        if (cpu->get_general_registers()[this->x] == this->byte) {
-            cpu->inc_program_counter_value(2);
-        }
-    }
-}
+    public:
+        SExb();
+        void process_instruction(Chip8* chip8) override;
+};
 
 class SNExb : public Instruction {
-    processInstruction(Chip8 chip8) {
-        Cpu* cpu = chip8->getCpu();
-        if (cpu->get_general_registers()[this->x] != this->byte) {
-            cpu->inc_program_counter_value(2);
-        }
-    }
-}
+    public:
+        SNExb();
+        void process_instruction(Chip8* chip8) override;
+};
 
 class SExy : public Instruction {
-    processInstruction(Chip8 chip8) {
-        Cpu* cpu = chip8->getCpu();
-        if (cpu->get_general_registers()[this->x] == cpu->get_general_registers()[this->y]) {
-            cpu->inc_program_counter_value(2);
-        }
-    }
-}
+    public:
+        SExy();
+        void process_instruction(Chip8* chip8) override;
+};
 
 class LDxb : public Instruction {
-    processInstruction(Chip8 chip8) {
-        Cpu* cpu = chip8->getCpu();
-        if (cpu->get_general_registers()[this->x] == cpu->get_general_registers()[this->y]) {
-            cpu->inc_program_counter_value(2);
-        }
-    }
-}
+    public:
+        LDxb();
+        void process_instruction(Chip8* chip8) override;
+};
 
 class ADDxb : public Instruction {
-    processInstruction(Chip8 chip8) {
-        Cpu* cpu = chip8->getCpu();
-        cpu->get_general_registers()[this->x] += this->byte;
-    }
-}
+    public:
+        ADDxb();
+        void process_instruction(Chip8* chip8) override;
+};
 
 class LDxy : public Instruction {
-    processInstruction(Chip8 chip8) {
-        Cpu* cpu = chip8->getCpu();
-        cpu->get_general_registers()[this->x] = cpu->get_general_registers()[this->y];
-    }
-}
+    public:
+        LDxy();
+        void process_instruction(Chip8* chip8) override;
+};
 
 class ORxy : public Instruction {
-    processInstruction(Chip8 chip8) {
-        Cpu* cpu = chip8->getCpu();
-        cpu->get_general_registers()[this->x] |= cpu->get_general_registers()[this->y];
-    }
-}
+    public:
+        ORxy();
+        void process_instruction(Chip8* chip8) override;
+};
 
 class ANDxy : public Instruction {
-    processInstruction(Chip8 chip8) {
-        Cpu* cpu = chip8->getCpu();
-        cpu->get_general_registers()[this->x] &= cpu->get_general_registers()[this->y];
-    }
-}
+    public:
+        ANDxy();
+        void process_instruction(Chip8* chip8) override;
+};
 
 class XORxy : public Instruction {
-    processInstruction(Chip8 chip8) {
-        Cpu* cpu = chip8->getCpu();
-        cpu->get_general_registers()[this->x] ^= cpu->get_general_registers()[this->y];
-    }
-}
+    public:
+        XORxy();
+        void process_instruction(Chip8* chip8) override;
+};
 
 class ADDxy : public Instruction {
-    processInstruction(Chip8 chip8) {
-        Cpu* cpu = chip8->getCpu();
-        if ((this->x + this->y) > 0xff) {
-            cpu->get_general_registers()[0xf] = 1;
-        } else {
-            cpu->get_general_registers()[0xf] = 0;
-        }
-        cpu->get_general_registers()[this->x] += cpu->get_general_registers()[this->y];
-    }
-}
+    public:
+        ADDxy();
+        void process_instruction(Chip8* chip8) override;
+};
 
 class SUBxy : public Instruction {
-    processInstruction(Chip8 chip8) {
-        Cpu* cpu = chip8->getCpu();
-        if (this->x > this->y) {
-            cpu->get_general_registers()[0xf] = 1;
-        }
-        else {
-            cpu->get_general_registers()[0xf] = 0;
-        }
-        cpu->get_general_registers()[this->x] -= cpu->get_general_registers()[this->y];
-    }
-}
-
+    public:
+        SUBxy();
+        void process_instruction(Chip8* chip8) override;
+};
 
 class SHRxy : public Instruction {
-    processInstruction(Chip8 chip8) {
-        Cpu* cpu = chip8->getCpu();
-        if (cpu->get_general_registers[this->x] & 0x1 == 1) {
-            cpu->get_general_registers[0xf] = 1;
-        } else {
-            cpu->get_general_registers[0xf] = 0;
-        }
-        cpu->get_general_registers[this->x] >>= 1;
-    }
-}
+    public:
+        SHRxy();
+        void process_instruction(Chip8* chip8) override;
+};
+
+class SUBNxy : public Instruction {
+    public:
+        SUBNxy();
+        void process_instruction(Chip8* chip8) override;
+};
+
+class SHLxy : public Instruction {
+    public:
+        SHLxy();
+        void process_instruction(Chip8* chip8) override;
+};
+
+class SNExy : public Instruction {
+    public:
+        SNExy();
+        void process_instruction(Chip8* chip8) override; 
+};
+
+class LDinnn : public Instruction {
+    public:
+        LDinnn();
+        void process_instruction(Chip8* chip8) override;
+};
+
+class JP0nnn : public Instruction {
+    public:
+        JP0nnn();
+        void process_instruction(Chip8* chip8) override;
+};
+
+class RNDxb : public Instruction {
+    public:
+        RNDxb();
+        void process_instruction(Chip8* chip8) override;
+};
 
 #endif
