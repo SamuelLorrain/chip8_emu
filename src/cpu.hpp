@@ -28,6 +28,7 @@ class Cpu {
 
         uint16_t get_sound_register_value();
         void set_sound_register_value(uint16_t value);
+
     private:
         std::vector<uint8_t> general_registers;
         std::stack<uint16_t> stack;

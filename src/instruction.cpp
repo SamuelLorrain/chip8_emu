@@ -4,7 +4,8 @@ Instruction::Instruction() :
     x(0), y(0), addr(0), byte(0), nibble(0)
 {}
 
-// Setters
+Instruction::~Instruction() {}
+
 Instruction* Instruction::set_x(int value) {
     this->x = value;
     return this;
@@ -76,7 +77,7 @@ Instruction* dispatch_instruction_type(uint16_t opcode) {
     else if ((opcode & 0xf0ff) == 0xf055) { return new LDpix(); }
     else if ((opcode & 0xf0ff) == 0xf065) { return new LDxpi(); }
     else {
-        throw "ErrorUnknownException";
+        throw "ErrorUnknownInstruction";
     }
 }
 
@@ -87,23 +88,27 @@ Instruction* decode_instruction(uint16_t opcode) {
 }
 
 CLS::CLS() : Instruction() {}
+CLS::~CLS() {}
 void CLS::process_instruction(Chip8* chip8) {
     // TODO TO IMPLEMENT
 }
 
 RET::RET() : Instruction() {}
+RET::~RET() {}
 void RET::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     cpu->set_program_counter_value(cpu->pop_stack());
 }
 
 JPnnn::JPnnn() : Instruction() {}
+JPnnn::~JPnnn() {}
 void JPnnn::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     cpu->set_program_counter_value(this->addr);
 }
 
 CALLnnn::CALLnnn() : Instruction() {}
+CALLnnn::~CALLnnn() {}
 void CALLnnn::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     cpu->push_stack(cpu->get_program_counter_value());
@@ -111,6 +116,7 @@ void CALLnnn::process_instruction(Chip8* chip8) {
 }
 
 SExb::SExb() : Instruction() {}
+SExb::~SExb() {}
 void SExb::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     if (cpu->get_general_registers()[this->x] == this->byte) {
@@ -119,6 +125,7 @@ void SExb::process_instruction(Chip8* chip8) {
 }
 
 SNExb::SNExb() : Instruction() {}
+SNExb::~SNExb() {}
 void SNExb::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     if (cpu->get_general_registers()[this->x] != this->byte) {
@@ -127,6 +134,7 @@ void SNExb::process_instruction(Chip8* chip8) {
 }
 
 SExy::SExy() : Instruction() {}
+SExy::~SExy() {}
 void SExy::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     if (cpu->get_general_registers()[this->x] == cpu->get_general_registers()[this->y]) {
@@ -135,12 +143,14 @@ void SExy::process_instruction(Chip8* chip8) {
 }
 
 LDxb::LDxb() : Instruction() {}
+LDxb::~LDxb() {}
 void LDxb::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     cpu->get_general_registers()[this->x] = this->byte;
 }
 
 ADDxb::ADDxb() : Instruction() {}
+ADDxb::~ADDxb() {}
 void ADDxb::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     cpu->get_general_registers()[this->x] =
@@ -148,30 +158,35 @@ void ADDxb::process_instruction(Chip8* chip8) {
 }
 
 LDxy::LDxy() : Instruction() {}
+LDxy::~LDxy() {}
 void LDxy::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     cpu->get_general_registers()[this->x] = cpu->get_general_registers()[this->y];
 }
 
 ORxy::ORxy() : Instruction() {}
+ORxy::~ORxy() {}
 void ORxy::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     cpu->get_general_registers()[this->x] |= cpu->get_general_registers()[this->y];
 }
 
 ANDxy::ANDxy() : Instruction() {}
+ANDxy::~ANDxy() {}
 void ANDxy::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     cpu->get_general_registers()[this->x] &= cpu->get_general_registers()[this->y];
 }
 
 XORxy::XORxy() : Instruction() {}
+XORxy::~XORxy() {}
 void XORxy::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     cpu->get_general_registers()[this->x] ^= cpu->get_general_registers()[this->y];
 }
 
 ADDxy::ADDxy() : Instruction() {}
+ADDxy::~ADDxy() {}
 void ADDxy::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     int x_value = cpu->get_general_registers()[this->x];
@@ -185,6 +200,7 @@ void ADDxy::process_instruction(Chip8* chip8) {
 }
 
 SUBxy::SUBxy() : Instruction() {}
+SUBxy::~SUBxy() {}
 void SUBxy::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     int x_value = cpu->get_general_registers()[this->x];
@@ -199,6 +215,7 @@ void SUBxy::process_instruction(Chip8* chip8) {
 }
 
 SHRxy::SHRxy() : Instruction() {}
+SHRxy::~SHRxy() {}
 void SHRxy::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     if ((cpu->get_general_registers()[this->x] & 0x1) == 1) {
@@ -210,6 +227,7 @@ void SHRxy::process_instruction(Chip8* chip8) {
 }
 
 SUBNxy::SUBNxy() : Instruction() {}
+SUBNxy::~SUBNxy() {}
 void SUBNxy::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     int x_value = cpu->get_general_registers()[this->x];
@@ -225,6 +243,7 @@ void SUBNxy::process_instruction(Chip8* chip8) {
 }
 
 SHLxy::SHLxy() : Instruction() {}
+SHLxy::~SHLxy() {}
 void SHLxy::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     if ((cpu->get_general_registers()[this->x] >> 7) == 1) {
@@ -236,6 +255,7 @@ void SHLxy::process_instruction(Chip8* chip8) {
 }
 
 SNExy::SNExy() : Instruction() {}
+SNExy::~SNExy() {}
 void SNExy::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     if (cpu->get_general_registers()[this->x] != cpu->get_general_registers()[this->y]) {
@@ -244,12 +264,14 @@ void SNExy::process_instruction(Chip8* chip8) {
 }
 
 LDinnn::LDinnn() : Instruction() {}
+LDinnn::~LDinnn() {}
 void LDinnn::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     cpu->set_i_register_value(this->addr);
 }
 
 JP0nnn::JP0nnn() : Instruction() {}
+JP0nnn::~JP0nnn() {}
 void JP0nnn::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     cpu->set_program_counter_value(
@@ -258,50 +280,59 @@ void JP0nnn::process_instruction(Chip8* chip8) {
 }
 
 RNDxb::RNDxb() : Instruction() {}
+RNDxb::~RNDxb() {}
 void RNDxb::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     cpu->get_general_registers()[this->x] = (chip8->get_rng_engine()() & this->byte);
 }
 
 DRWxyn::DRWxyn() : Instruction() {}
+DRWxyn::~DRWxyn() {}
 void DRWxyn::process_instruction(Chip8* chip8) {
     // TODO TO IMPLEMENT
 }
 
 SKPx::SKPx() : Instruction() {}
+SKPx::~SKPx() {}
 void SKPx::process_instruction(Chip8* chip8) {
     // TODO TO IMPLEMENT
 }
 
 SKNPx::SKNPx() : Instruction() {}
+SKNPx::~SKNPx() {}
 void SKNPx::process_instruction(Chip8* chip8) {
     // TODO TO IMPLEMENT
 }
 
 LDxdt::LDxdt() : Instruction() {}
+LDxdt::~LDxdt() {}
 void LDxdt::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     cpu->get_general_registers()[this->x] = cpu->get_delay_register_value();
 }
 
 LDxk::LDxk() : Instruction() {}
+LDxk::~LDxk() {}
 void LDxk::process_instruction(Chip8* chip8) {
     // TODO TO IMPLEMENT
 }
 
 LDdtx::LDdtx() : Instruction() {}
+LDdtx::~LDdtx() {}
 void LDdtx::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     cpu->set_delay_register_value(cpu->get_general_registers()[this->x]);
 }
 
 LDstx::LDstx() : Instruction() {}
+LDstx::~LDstx() {}
 void LDstx::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     cpu->set_sound_register_value(cpu->get_general_registers()[this->x]);
 }
 
 ADDix::ADDix() : Instruction() {}
+ADDix::~ADDix() {}
 void ADDix::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     cpu->set_i_register_value(
@@ -311,16 +342,19 @@ void ADDix::process_instruction(Chip8* chip8) {
 }
 
 LDfx::LDfx() : Instruction() {}
+LDfx::~LDfx() {}
 void LDfx::process_instruction(Chip8* chip8) {
     // TODO TO IMPLEMENT
 }
 
 LDbx::LDbx() : Instruction() {}
+LDbx::~LDbx() {}
 void LDbx::process_instruction(Chip8* chip8) {
     // TODO TO IMPLEMENT
 }
 
 LDpix::LDpix() : Instruction() {}
+LDpix::~LDpix() {}
 void LDpix::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     Memory* memory = chip8->get_memory();
@@ -333,6 +367,7 @@ void LDpix::process_instruction(Chip8* chip8) {
 }
 
 LDxpi::LDxpi() : Instruction() {}
+LDxpi::~LDxpi() {}
 void LDxpi::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     Memory* memory = chip8->get_memory();

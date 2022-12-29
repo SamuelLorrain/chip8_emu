@@ -515,9 +515,110 @@ void test_jp0nnn_instruction() {
     delete(jp0nnn);
 }
 
+void test_cls_instruction() {
+    assert(0 == 1);
+}
+
 void test_rndxb_instruction() {
     assert(0 == 1);
 }
+
+void test_drwxyn_instruction() {
+    assert(0 == 1);
+}
+
+void test_skp_instruction() {
+    assert(0 == 1);
+}
+
+void test_sknp_instruction() {
+    assert(0 == 1);
+}
+
+void test_ldxdt_instruction() {
+    Memory* memory = new Memory(MEM_SIZE);
+    Cpu* cpu = new Cpu();
+    Chip8* chip8 = new Chip8(memory, cpu);
+    LDxdt* ldxdt = new LDxdt();
+
+    cpu->set_delay_register_value(0xab);
+    ldxdt->set_x(0x0);
+    cpu->get_general_registers()[0x0] = 0x0;
+    ldxdt->process_instruction(chip8);
+    assert(cpu->get_general_registers()[0x0] == 0xab);
+
+    delete(memory);
+    delete(cpu);
+    delete(chip8);
+    delete(ldxdt);
+}
+
+void test_ldxk_instruction() {
+    assert(0 == 1);
+}
+
+void test_lddtx_instruction() {
+    Memory* memory = new Memory(MEM_SIZE);
+    Cpu* cpu = new Cpu();
+    Chip8* chip8 = new Chip8(memory, cpu);
+    LDdtx* lddtx = new LDdtx();
+
+    cpu->set_delay_register_value(0x0);
+    lddtx->set_x(0x0);
+    cpu->get_general_registers()[0x0] = 0xab;
+    lddtx->process_instruction(chip8);
+    assert(cpu->get_delay_register_value() == 0xab);
+
+    delete(memory);
+    delete(cpu);
+    delete(chip8);
+    delete(lddtx);
+}
+
+void test_ldstx_instruction() {
+    Memory* memory = new Memory(MEM_SIZE);
+    Cpu* cpu = new Cpu();
+    Chip8* chip8 = new Chip8(memory, cpu);
+    LDstx* ldstx = new LDstx();
+
+    cpu->set_sound_register_value(0x0);
+    ldstx->set_x(0x0);
+    cpu->get_general_registers()[0x0] = 0xab;
+    ldstx->process_instruction(chip8);
+    assert(cpu->get_sound_register_value() == 0xab);
+
+    delete(memory);
+    delete(cpu);
+    delete(chip8);
+    delete(ldstx);
+}
+
+void test_addix_instruction() {
+    Memory* memory = new Memory(MEM_SIZE);
+    Cpu* cpu = new Cpu();
+    Chip8* chip8 = new Chip8(memory, cpu);
+    ADDix* addix = new ADDix();
+
+    addix->set_x(0x0);
+    cpu->get_general_registers()[0x0] = 0xab;
+    cpu->set_i_register_value(0x100);
+    addix->process_instruction(chip8);
+    assert(cpu->get_i_register_value() == 0x1ab);
+
+    delete(memory);
+    delete(cpu);
+    delete(chip8);
+    delete(addix);
+}
+
+void test_ldfx_instruction() {
+    assert(0 == 1);
+}
+
+void test_ldbx_instruction() {
+    assert(0 == 1);
+}
+
 
 int main() {
     test_set_get_memory();
@@ -525,6 +626,7 @@ int main() {
     test_fetch_opcode();
 
     // instructions test
+    /* test_cls_instruction(); */
     test_ret_instruction();
     test_jpnnn_instruction();
     test_callnnn_instruction();
@@ -545,8 +647,17 @@ int main() {
     test_snexy_instruction();
     test_ldinnn_instruction();
     test_jp0nnn_instruction();
-    /* TODO TESTING following instructions */
     /* test_rndxb_instruction(); */
+    /* test_drwxyn_instruction(); */
+    /* test_skp_instruction(); */
+    /* test_sknp_instruction(); */
+    test_ldxdt_instruction();
+    /* test_ldxk_instruction(); */
+    test_lddtx_instruction();
+    test_ldstx_instruction();
+    test_addix_instruction();
+    /* test_ldfx_instruction(); */
+    /* test_ldbx_instruction(); */
 
     std::cout << "all tests passed" << std::endl;
     return 0;

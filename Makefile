@@ -1,5 +1,5 @@
 CC = g++
-ARGUMENTS = -c --std=c++14
+ARGUMENTS = -c --std=c++14 -Wall
 
 
 chip8: build/main.o build/chip8.o build/memory.o build/cpu.o build/instruction.o
