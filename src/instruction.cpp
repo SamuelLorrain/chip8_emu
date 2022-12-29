@@ -358,7 +358,7 @@ LDpix::~LDpix() {}
 void LDpix::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     Memory* memory = chip8->get_memory();
-    for(int i = 0; i < this->x; i++) {
+    for(int i = 0; i <= this->x; i++) {
         memory->set_8_bits_value(
             cpu->get_i_register_value() + i,
             cpu->get_general_registers()[i]
@@ -371,7 +371,7 @@ LDxpi::~LDxpi() {}
 void LDxpi::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     Memory* memory = chip8->get_memory();
-    for(int i = 0; i < this->x; i++) {
+    for(int i = 0; i <= this->x; i++) {
         cpu->get_general_registers()[i] = 
             memory->get_8_bits_value(cpu->get_i_register_value() + i);
     }

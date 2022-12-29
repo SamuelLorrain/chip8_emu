@@ -11,7 +11,7 @@ Chip8::Chip8(Memory* memory, Cpu* cpu):
 void Chip8::next() {
     uint16_t opcode = this->fetch_opcode();
     Instruction* decoded_instruction = decode_instruction(opcode);
-    /* process_instruction(decoded_instruction); */
+    decoded_instruction->process_instruction(this);
 }
 
 uint16_t Chip8::fetch_opcode() {

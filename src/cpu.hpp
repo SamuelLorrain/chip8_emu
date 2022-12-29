@@ -34,7 +34,6 @@ class Cpu {
         std::stack<uint16_t> stack;
         uint8_t delay_register;
         uint8_t sound_register;
-        uint8_t stack_pointer;
         uint16_t program_counter;
         uint16_t i_register;
 };

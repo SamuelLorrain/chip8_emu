@@ -14,7 +14,7 @@ class Instruction {
 
     public:
         Instruction();
-        ~Instruction();
+        virtual ~Instruction() = 0;
         Instruction* set_x(int value);
         Instruction* set_y(int value);
         Instruction* set_addr(int value);

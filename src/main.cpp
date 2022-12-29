@@ -619,6 +619,61 @@ void test_ldbx_instruction() {
     assert(0 == 1);
 }
 
+void test_ldpix_instruction() {
+    Memory* memory = new Memory(MEM_SIZE);
+    Cpu* cpu = new Cpu();
+    Chip8* chip8 = new Chip8(memory, cpu);
+    LDpix* ldpix = new LDpix();
+
+    ldpix->set_x(0x5);
+    cpu->set_i_register_value(0x100);
+    cpu->get_general_registers()[0x0] = 0xa;
+    cpu->get_general_registers()[0x1] = 0xb;
+    cpu->get_general_registers()[0x2] = 0xc;
+    cpu->get_general_registers()[0x3] = 0xd;
+    cpu->get_general_registers()[0x4] = 0xe;
+    cpu->get_general_registers()[0x5] = 0xf;
+    ldpix->process_instruction(chip8);
+    assert(memory->get_8_bits_value(0x100) == 0xa);
+    assert(memory->get_8_bits_value(0x101) == 0xb);
+    assert(memory->get_8_bits_value(0x102) == 0xc);
+    assert(memory->get_8_bits_value(0x103) == 0xd);
+    assert(memory->get_8_bits_value(0x104) == 0xe);
+    assert(memory->get_8_bits_value(0x105) == 0xf);
+
+    delete(memory);
+    delete(cpu);
+    delete(chip8);
+    delete(ldpix);
+}
+
+void test_ldxpi_instruction() {
+    Memory* memory = new Memory(MEM_SIZE);
+    Cpu* cpu = new Cpu();
+    Chip8* chip8 = new Chip8(memory, cpu);
+    LDxpi* ldxpi = new LDxpi();
+
+    ldxpi->set_x(0x5);
+    cpu->set_i_register_value(0x100);
+    memory->set_8_bits_value(0x100, 0xa);
+    memory->set_8_bits_value(0x101, 0xb);
+    memory->set_8_bits_value(0x102, 0xc);
+    memory->set_8_bits_value(0x103, 0xd);
+    memory->set_8_bits_value(0x104, 0xe);
+    memory->set_8_bits_value(0x105, 0xf);
+    ldxpi->process_instruction(chip8);
+    assert(cpu->get_general_registers()[0x0] == 0xa);
+    assert(cpu->get_general_registers()[0x1] == 0xb);
+    assert(cpu->get_general_registers()[0x2] == 0xc);
+    assert(cpu->get_general_registers()[0x3] == 0xd);
+    assert(cpu->get_general_registers()[0x4] == 0xe);
+    assert(cpu->get_general_registers()[0x5] == 0xf);
+
+    delete(memory);
+    delete(cpu);
+    delete(chip8);
+    delete(ldxpi);
+}
 
 int main() {
     test_set_get_memory();
@@ -658,6 +713,8 @@ int main() {
     test_addix_instruction();
     /* test_ldfx_instruction(); */
     /* test_ldbx_instruction(); */
+    test_ldpix_instruction();
+    test_ldxpi_instruction();
 
     std::cout << "all tests passed" << std::endl;
     return 0;
