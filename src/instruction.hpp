@@ -8,23 +8,23 @@ class Instruction {
     protected:
         uint8_t x;
         uint8_t y;
-        uint16_t i;
         uint16_t addr;
         int byte;
         int nibble;
 
     public:
         Instruction();
-        void set_x(int value);
-        void set_y(int value);
-        void set_i(int value);
-        void set_addr(int value);
-        void set_byte(int value);
-        void set_nibble(int value);
+        Instruction* set_x(int value);
+        Instruction* set_y(int value);
+        Instruction* set_addr(int value);
+        Instruction* set_byte(int value);
+        Instruction* set_nibble(int value);
         virtual void process_instruction(Chip8* chip8) = 0;
+        void set_values_from_opcode(uint16_t opcode);
 };
 
-Instruction* decode_instruction(uint16_t instruction);
+Instruction* decode_instruction(uint16_t opcode);
+Instruction* dispatch_instruction_type(uint16_t instruction);
 
 class CLS : public Instruction {
     public:
@@ -155,6 +155,78 @@ class JP0nnn : public Instruction {
 class RNDxb : public Instruction {
     public:
         RNDxb();
+        void process_instruction(Chip8* chip8) override;
+};
+
+class DRWxyn : public Instruction {
+    public:
+        DRWxyn();
+        void process_instruction(Chip8* chip8) override;
+};
+
+class SKPx : public Instruction {
+    public:
+        SKPx();
+        void process_instruction(Chip8* chip8) override;
+};
+
+class SKNPx : public Instruction {
+    public:
+        SKNPx();
+        void process_instruction(Chip8* chip8) override;
+};
+
+class LDxdt : public Instruction {
+    public:
+        LDxdt();
+        void process_instruction(Chip8* chip8) override;
+};
+
+class LDxk : public Instruction {
+    public:
+        LDxk();
+        void process_instruction(Chip8* chip8) override;
+};
+
+class LDdtx : public Instruction {
+    public:
+        LDdtx();
+        void process_instruction(Chip8* chip8) override;
+};
+
+class LDstx : public Instruction {
+    public:
+        LDstx();
+        void process_instruction(Chip8* chip8) override;
+};
+
+class ADDix : public Instruction {
+    public:
+        ADDix();
+        void process_instruction(Chip8* chip8) override;
+};
+
+class LDfx : public Instruction {
+    public:
+        LDfx();
+        void process_instruction(Chip8* chip8) override;
+};
+
+class LDbx : public Instruction {
+    public:
+        LDbx();
+        void process_instruction(Chip8* chip8) override;
+};
+
+class LDpix : public Instruction {
+    public:
+        LDpix();
+        void process_instruction(Chip8* chip8) override;
+};
+
+class LDxpi : public Instruction {
+    public:
+        LDxpi();
         void process_instruction(Chip8* chip8) override;
 };
 

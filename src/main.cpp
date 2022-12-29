@@ -6,8 +6,10 @@
 #include "cpu.hpp"
 #include "instruction.hpp"
 
+constexpr int MEM_SIZE = 4096;
+
 void test_set_get_memory() {
-    Memory* memory = new Memory(4096);
+    Memory* memory = new Memory(MEM_SIZE);
     Cpu* cpu = new Cpu();
     Chip8* chip8 = new Chip8(memory, cpu);
 
@@ -47,7 +49,7 @@ void test_get_set_pc() {
 }
 
 void test_fetch_opcode() {
-    Memory* memory = new Memory(4096);
+    Memory* memory = new Memory(MEM_SIZE);
     Cpu* cpu = new Cpu();
     Chip8* chip8 = new Chip8(memory, cpu);
 
@@ -61,7 +63,7 @@ void test_fetch_opcode() {
 }
 
 void test_ret_instruction() {
-    Memory* memory = new Memory(4096);
+    Memory* memory = new Memory(MEM_SIZE);
     Cpu* cpu = new Cpu();
     Chip8* chip8 = new Chip8(memory, cpu);
     RET* ret = new RET();
@@ -77,7 +79,7 @@ void test_ret_instruction() {
 }
 
 void test_jpnnn_instruction() {
-    Memory* memory = new Memory(4096);
+    Memory* memory = new Memory(MEM_SIZE);
     Cpu* cpu = new Cpu();
     Chip8* chip8 = new Chip8(memory, cpu);
     JPnnn* jpnnn = new JPnnn();
@@ -93,7 +95,7 @@ void test_jpnnn_instruction() {
 }
 
 void test_callnnn_instruction() {
-    Memory* memory = new Memory(4096);
+    Memory* memory = new Memory(MEM_SIZE);
     Cpu* cpu = new Cpu();
     Chip8* chip8 = new Chip8(memory, cpu);
     CALLnnn* callnnn = new CALLnnn();
@@ -111,7 +113,7 @@ void test_callnnn_instruction() {
 }
 
 void test_sexb_instruction() {
-    Memory* memory = new Memory(4096);
+    Memory* memory = new Memory(MEM_SIZE);
     Cpu* cpu = new Cpu();
     Chip8* chip8 = new Chip8(memory, cpu);
     SExb* sexb = new SExb();
@@ -137,7 +139,7 @@ void test_sexb_instruction() {
 }
 
 void test_snexb_instruction() {
-    Memory* memory = new Memory(4096);
+    Memory* memory = new Memory(MEM_SIZE);
     Cpu* cpu = new Cpu();
     Chip8* chip8 = new Chip8(memory, cpu);
     SNExb* snexb = new SNExb();
@@ -163,7 +165,7 @@ void test_snexb_instruction() {
 }
 
 void test_sexy_instruction() {
-    Memory* memory = new Memory(4096);
+    Memory* memory = new Memory(MEM_SIZE);
     Cpu* cpu = new Cpu();
     Chip8* chip8 = new Chip8(memory, cpu);
     SExy* sexy = new SExy();
@@ -191,7 +193,7 @@ void test_sexy_instruction() {
 }
 
 void test_ldxb_instruction() {
-    Memory* memory = new Memory(4096);
+    Memory* memory = new Memory(MEM_SIZE);
     Cpu* cpu = new Cpu();
     Chip8* chip8 = new Chip8(memory, cpu);
     LDxb* ldxb = new LDxb();
@@ -211,7 +213,7 @@ void test_ldxb_instruction() {
 }
 
 void test_addxb_instruction() {
-    Memory* memory = new Memory(4096);
+    Memory* memory = new Memory(MEM_SIZE);
     Cpu* cpu = new Cpu();
     Chip8* chip8 = new Chip8(memory, cpu);
     ADDxb* addxb = new ADDxb();
@@ -235,7 +237,7 @@ void test_addxb_instruction() {
 }
 
 void test_ldxy_instruction() {
-    Memory* memory = new Memory(4096);
+    Memory* memory = new Memory(MEM_SIZE);
     Cpu* cpu = new Cpu();
     Chip8* chip8 = new Chip8(memory, cpu);
     LDxy* ldxy = new LDxy();
@@ -254,7 +256,7 @@ void test_ldxy_instruction() {
 }
 
 void test_orxy_instruction() {
-    Memory* memory = new Memory(4096);
+    Memory* memory = new Memory(MEM_SIZE);
     Cpu* cpu = new Cpu();
     Chip8* chip8 = new Chip8(memory, cpu);
     ORxy* orxy = new ORxy();
@@ -273,43 +275,244 @@ void test_orxy_instruction() {
 }
 
 void test_andxy_instruction() {
-    assert(0 == 1);
+    Memory* memory = new Memory(MEM_SIZE);
+    Cpu* cpu = new Cpu();
+    Chip8* chip8 = new Chip8(memory, cpu);
+    ANDxy* andxy = new ANDxy();
+
+    andxy->set_x(0);
+    andxy->set_y(1);
+    cpu->get_general_registers()[0x0] = 0x9a;
+    cpu->get_general_registers()[0x1] = 0x9c;
+    andxy->process_instruction(chip8);
+    assert(cpu->get_general_registers()[0x0] == 0x98);
+
+    delete(memory);
+    delete(cpu);
+    delete(chip8);
+    delete(andxy);
 }
 
 void test_xorxy_instruction() {
-    assert(0 == 1);
+    Memory* memory = new Memory(MEM_SIZE);
+    Cpu* cpu = new Cpu();
+    Chip8* chip8 = new Chip8(memory, cpu);
+    XORxy* xorxy = new XORxy();
+
+    xorxy->set_x(0);
+    xorxy->set_y(1);
+    cpu->get_general_registers()[0x0] = 0x9a;
+    cpu->get_general_registers()[0x1] = 0x9c;
+    xorxy->process_instruction(chip8);
+    assert(cpu->get_general_registers()[0x0] == 0x6);
+
+    delete(memory);
+    delete(cpu);
+    delete(chip8);
+    delete(xorxy);
 }
 
 void test_addxy_instruction() {
-    assert(0 == 1);
+    Memory* memory = new Memory(MEM_SIZE);
+    Cpu* cpu = new Cpu();
+    Chip8* chip8 = new Chip8(memory, cpu);
+    ADDxy* addxy = new ADDxy();
+
+    addxy->set_x(0);
+    addxy->set_y(1);
+    cpu->get_general_registers()[0x0] = 0xff;
+    cpu->get_general_registers()[0x1] = 0x1;
+    addxy->process_instruction(chip8);
+    assert(cpu->get_general_registers()[0x0] == 0x0);
+    assert(cpu->get_general_registers()[0xf] == 0x1);
+
+    cpu->get_general_registers()[0x0] = 0xaa;
+    cpu->get_general_registers()[0x1] = 0x10;
+    addxy->process_instruction(chip8);
+    assert(cpu->get_general_registers()[0x0] == 0xba);
+    assert(cpu->get_general_registers()[0xf] == 0x0);
+
+    delete(memory);
+    delete(cpu);
+    delete(chip8);
+    delete(addxy);
 }
 
 void test_subxy_instruction() {
-    assert(0 == 1);
+    Memory* memory = new Memory(MEM_SIZE);
+    Cpu* cpu = new Cpu();
+    Chip8* chip8 = new Chip8(memory, cpu);
+    SUBxy* subxy = new SUBxy();
+
+    subxy->set_x(0);
+    subxy->set_y(1);
+    cpu->get_general_registers()[0x0] = 0x1;
+    cpu->get_general_registers()[0x1] = 0x2;
+    subxy->process_instruction(chip8);
+    assert(cpu->get_general_registers()[0x0] == 0xff);
+    assert(cpu->get_general_registers()[0xf] == 0x0);
+
+    cpu->get_general_registers()[0x0] = 0x2;
+    cpu->get_general_registers()[0x1] = 0x2;
+    subxy->process_instruction(chip8);
+    assert(cpu->get_general_registers()[0x0] == 0x0);
+    assert(cpu->get_general_registers()[0xf] == 0x0);
+
+    cpu->get_general_registers()[0x0] = 0x3;
+    cpu->get_general_registers()[0x1] = 0x2;
+    subxy->process_instruction(chip8);
+    assert(cpu->get_general_registers()[0x0] == 0x1);
+    assert(cpu->get_general_registers()[0xf] == 0x1);
+
+    delete(memory);
+    delete(cpu);
+    delete(chip8);
+    delete(subxy);
 }
 
 void test_shrxy_instruction() {
-    assert(0 == 1);
+    Memory* memory = new Memory(MEM_SIZE);
+    Cpu* cpu = new Cpu();
+    Chip8* chip8 = new Chip8(memory, cpu);
+    SHRxy* shrxy = new SHRxy();
+
+    shrxy->set_x(0);
+    cpu->get_general_registers()[0x0] = 0b1;
+    shrxy->process_instruction(chip8);
+    assert(cpu->get_general_registers()[0x0] == 0x0);
+    assert(cpu->get_general_registers()[0xf] == 0x1);
+
+    cpu->get_general_registers()[0x0] = 0b10;
+    shrxy->process_instruction(chip8);
+    assert(cpu->get_general_registers()[0x0] == 0b1);
+    assert(cpu->get_general_registers()[0xf] == 0x0);
+
+    cpu->get_general_registers()[0x0] = 0b101;
+    shrxy->process_instruction(chip8);
+    assert(cpu->get_general_registers()[0x0] == 0b10);
+    assert(cpu->get_general_registers()[0xf] == 0x1);
+
+    delete(memory);
+    delete(cpu);
+    delete(chip8);
+    delete(shrxy);
 }
 
 void test_subnxy_instruction() {
-    assert(0 == 1);
+    Memory* memory = new Memory(MEM_SIZE);
+    Cpu* cpu = new Cpu();
+    Chip8* chip8 = new Chip8(memory, cpu);
+    SUBNxy* subnxy = new SUBNxy();
+
+    subnxy->set_x(0);
+    subnxy->set_y(1);
+    cpu->get_general_registers()[0x0] = 0x2;
+    cpu->get_general_registers()[0x1] = 0x1;
+    subnxy->process_instruction(chip8);
+    assert(cpu->get_general_registers()[0x0] == 0xff);
+    assert(cpu->get_general_registers()[0xf] == 0x0);
+
+    cpu->get_general_registers()[0x0] = 0x2;
+    cpu->get_general_registers()[0x1] = 0x2;
+    subnxy->process_instruction(chip8);
+    assert(cpu->get_general_registers()[0x0] == 0x0);
+    assert(cpu->get_general_registers()[0xf] == 0x0);
+
+    cpu->get_general_registers()[0x0] = 0x2;
+    cpu->get_general_registers()[0x1] = 0x3;
+    subnxy->process_instruction(chip8);
+    assert(cpu->get_general_registers()[0x0] == 0x1);
+    assert(cpu->get_general_registers()[0xf] == 0x1);
+
+    delete(memory);
+    delete(cpu);
+    delete(chip8);
+    delete(subnxy);
 }
 
 void test_shlxy_instruction() {
-    assert(0 == 1);
+    Memory* memory = new Memory(MEM_SIZE);
+    Cpu* cpu = new Cpu();
+    Chip8* chip8 = new Chip8(memory, cpu);
+    SHLxy* shlxy = new SHLxy();
+
+    shlxy->set_x(0);
+    cpu->get_general_registers()[0x0] = 0b00000101;
+    shlxy->process_instruction(chip8);
+    assert(cpu->get_general_registers()[0x0] == 0b00001010);
+    assert(cpu->get_general_registers()[0xf] == 0b0);
+
+    cpu->get_general_registers()[0x0] = 0b10000101;
+    shlxy->process_instruction(chip8);
+    assert(cpu->get_general_registers()[0x0] == 0b00001010);
+    assert(cpu->get_general_registers()[0xf] == 0b1);
+
+    delete(memory);
+    delete(cpu);
+    delete(chip8);
+    delete(shlxy);
 }
 
 void test_snexy_instruction() {
-    assert(0 == 1);
+    Memory* memory = new Memory(MEM_SIZE);
+    Cpu* cpu = new Cpu();
+    Chip8* chip8 = new Chip8(memory, cpu);
+    SNExy* snexy = new SNExy();
+
+    cpu->set_program_counter_value(0x200);
+    cpu->get_general_registers()[0x0] = 0xaa;
+    cpu->get_general_registers()[0x1] = 0xbb;
+    snexy->set_x(0);
+    snexy->set_y(1);
+    snexy->process_instruction(chip8);
+    assert(cpu->get_program_counter_value() == 0x202);
+
+    cpu->set_program_counter_value(0x200);
+    cpu->get_general_registers()[0x0] = 0xaa;
+    cpu->get_general_registers()[0x1] = 0xaa;
+    snexy->set_x(0);
+    snexy->set_y(1);
+    snexy->process_instruction(chip8);
+    assert(cpu->get_program_counter_value() == 0x200);
+
+    delete(memory);
+    delete(cpu);
+    delete(chip8);
+    delete(snexy);
 }
 
 void test_ldinnn_instruction() {
-    assert(0 == 1);
+    Memory* memory = new Memory(MEM_SIZE);
+    Cpu* cpu = new Cpu();
+    Chip8* chip8 = new Chip8(memory, cpu);
+    LDinnn* ldinnn = new LDinnn();
+
+    cpu->set_i_register_value(0x0);
+    ldinnn->set_addr(0x1234);
+    ldinnn->process_instruction(chip8);
+    assert(cpu->get_i_register_value() == 0x1234);
+
+    delete(memory);
+    delete(cpu);
+    delete(chip8);
+    delete(ldinnn);
 }
 
 void test_jp0nnn_instruction() {
-    assert(0 == 1);
+    Memory* memory = new Memory(MEM_SIZE);
+    Cpu* cpu = new Cpu();
+    Chip8* chip8 = new Chip8(memory, cpu);
+    JP0nnn* jp0nnn = new JP0nnn();
+
+    jp0nnn->set_addr(0x1234);
+    cpu->get_general_registers()[0x0] = 0xff;
+    jp0nnn->process_instruction(chip8);
+    assert(cpu->get_program_counter_value() == (0x1234+0xff));
+
+    delete(memory);
+    delete(cpu);
+    delete(chip8);
+    delete(jp0nnn);
 }
 
 void test_rndxb_instruction() {
@@ -321,7 +524,7 @@ int main() {
     test_get_set_pc();
     test_fetch_opcode();
 
-    // testing instructions
+    // instructions test
     test_ret_instruction();
     test_jpnnn_instruction();
     test_callnnn_instruction();
@@ -342,7 +545,8 @@ int main() {
     test_snexy_instruction();
     test_ldinnn_instruction();
     test_jp0nnn_instruction();
-    test_rndxb_instruction();
+    /* TODO TESTING following instructions */
+    /* test_rndxb_instruction(); */
 
     std::cout << "all tests passed" << std::endl;
     return 0;
