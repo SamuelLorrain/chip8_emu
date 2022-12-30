@@ -90,7 +90,10 @@ Instruction* decode_instruction(uint16_t opcode) {
 CLS::CLS() : Instruction() {}
 CLS::~CLS() {}
 void CLS::process_instruction(Chip8* chip8) {
-    // TODO TO IMPLEMENT
+    Screen* screen = chip8->get_screen();
+    for(int i = 0; i < screen->get_size(); i++) {
+        screen->off_pixel(i);
+    }
 }
 
 RET::RET() : Instruction() {}
@@ -289,7 +292,36 @@ void RNDxb::process_instruction(Chip8* chip8) {
 DRWxyn::DRWxyn() : Instruction() {}
 DRWxyn::~DRWxyn() {}
 void DRWxyn::process_instruction(Chip8* chip8) {
-    // TODO TO IMPLEMENT
+    Cpu* cpu = chip8->get_cpu();
+    Memory* memory = chip8->get_memory();
+    Screen* screen = chip8->get_screen();
+    int begin_x = cpu->get_general_registers()[this->x] % screen->get_size_x();
+    int current_x = begin_x;
+    int current_y = cpu->get_general_registers()[this->y] % screen->get_size_y();
+    cpu->get_general_registers()[0xf] = 0;
+    uint8_t current_sprite_row_data;
+    uint8_t current_sprite_pixel_data;
+
+    for (int sprite_row = 0; (sprite_row < this->nibble) || (current_y > screen->get_size_y()); sprite_row++, current_y++) {
+        current_sprite_row_data = memory->get_framebuffer()[cpu->get_i_register_value()+sprite_row];
+        for (int i = 7; i <= 0; i--) {
+            current_sprite_pixel_data = (current_sprite_row_data >> i) & 0b0000001;
+            if (current_x >= screen->get_size_x()) {
+                break;
+            }
+            else if ((screen->get_pixel(current_x, current_y) > 0) && (current_sprite_pixel_data > 0)) {
+                cpu->get_general_registers()[0xf] = 1;
+                screen->off_pixel(current_x, current_y);
+            } else if ((screen->get_pixel(current_x, current_y) == 0) && (current_sprite_pixel_data > 0)) {
+                screen->on_pixel(current_x, current_y);
+            }
+            current_x++;
+        }
+        current_x = begin_x;
+        if (current_y >= screen->get_size_y()) {
+            break;
+        }
+    }
 }
 
 SKPx::SKPx() : Instruction() {}
@@ -335,22 +367,28 @@ ADDix::ADDix() : Instruction() {}
 ADDix::~ADDix() {}
 void ADDix::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
-    cpu->set_i_register_value(
-            cpu->get_i_register_value() +
-            cpu->get_general_registers()[this->x]
-    );
+    if ((cpu->get_i_register_value() + cpu->get_general_registers()[this->x]) > 0xfff) {
+        cpu->get_general_registers()[0xf] = 1;
+    } else {
+        cpu->get_general_registers()[0xf] = 0;
+    }
+    cpu->set_i_register_value(cpu->get_i_register_value() + cpu->get_general_registers()[this->x]);
 }
 
 LDfx::LDfx() : Instruction() {}
 LDfx::~LDfx() {}
 void LDfx::process_instruction(Chip8* chip8) {
-    // TODO TO IMPLEMENT
+    Cpu* cpu = chip8->get_cpu();
+    uint8_t x_register_value = cpu->get_general_registers()[this->x];
+    if (x_register_value > 9) {
+        return;
+    }
+    cpu->set_i_register_value(BEGIN_FONT_ARRAY_ADDR+(SPRITE_SIZE*x_register_value));
 }
 
 LDbx::LDbx() : Instruction() {}
 LDbx::~LDbx() {}
 void LDbx::process_instruction(Chip8* chip8) {
-    // TODO TO IMPLEMENT
 }
 
 LDpix::LDpix() : Instruction() {}

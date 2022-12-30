@@ -5,6 +5,7 @@
 #include "memory.hpp"
 #include "cpu.hpp"
 #include "instruction.hpp"
+#include "screen.hpp"
 
 constexpr int MEM_SIZE = 4096;
 
@@ -516,7 +517,24 @@ void test_jp0nnn_instruction() {
 }
 
 void test_cls_instruction() {
-    assert(0 == 1);
+    Memory* memory = new Memory(MEM_SIZE);
+    Cpu* cpu = new Cpu();
+    Screen* screen = new Screen(64, 32);
+    Chip8* chip8 = new Chip8(memory, cpu, screen);
+    CLS* cls = new CLS();
+
+    for(int i = 0; i < 64*32; i++) {
+        screen->get_framebuffer()[i] = SCREEN_ON;
+    }
+    cls->process_instruction(chip8);
+    for(int i = 0; i < 64*32; i++) {
+        assert(screen->get_framebuffer()[i] == SCREEN_OFF);
+    }
+
+    delete(memory);
+    delete(cpu);
+    delete(screen);
+    delete(chip8);
 }
 
 void test_rndxb_instruction() {
@@ -612,8 +630,43 @@ void test_addix_instruction() {
 }
 
 void test_ldfx_instruction() {
-    assert(0 == 1);
+    Chip8* chip8 = new Chip8();
+    LDfx* ldfx = new LDfx();
+
+    chip8->get_cpu()->set_i_register_value(0x0);
+    ldfx->set_x(0);
+    chip8->get_cpu()->get_general_registers()[0x0] = 0;
+    ldfx->process_instruction(chip8);
+    assert(chip8->get_cpu()->get_i_register_value() == BEGIN_FONT_ARRAY_ADDR);
+
+    chip8->get_cpu()->get_general_registers()[0x0] = 1;
+    ldfx->process_instruction(chip8);
+    assert(chip8->get_cpu()->get_i_register_value() == BEGIN_FONT_ARRAY_ADDR+5);
+
+    chip8->get_cpu()->get_general_registers()[0x0] = 2;
+    ldfx->process_instruction(chip8);
+    assert(chip8->get_cpu()->get_i_register_value() == BEGIN_FONT_ARRAY_ADDR+10);
+
+    chip8->get_cpu()->get_general_registers()[0x0] = 3;
+    ldfx->process_instruction(chip8);
+    assert(chip8->get_cpu()->get_i_register_value() == BEGIN_FONT_ARRAY_ADDR+15);
+
+    chip8->get_cpu()->get_general_registers()[0x0] = 4;
+    ldfx->process_instruction(chip8);
+    assert(chip8->get_cpu()->get_i_register_value() == BEGIN_FONT_ARRAY_ADDR+20);
+
+    chip8->get_cpu()->get_general_registers()[0x0] = 9;
+    ldfx->process_instruction(chip8);
+    assert(chip8->get_cpu()->get_i_register_value() == BEGIN_FONT_ARRAY_ADDR+45);
+
+    chip8->get_cpu()->get_general_registers()[0x0] = 10;
+    ldfx->process_instruction(chip8);
+    assert(chip8->get_cpu()->get_i_register_value() == BEGIN_FONT_ARRAY_ADDR+45); // same value as before
+
+    delete(chip8);
+    delete(ldfx);
 }
+
 
 void test_ldbx_instruction() {
     assert(0 == 1);
@@ -681,7 +734,7 @@ int main() {
     test_fetch_opcode();
 
     // instructions test
-    /* test_cls_instruction(); */
+    test_cls_instruction();
     test_ret_instruction();
     test_jpnnn_instruction();
     test_callnnn_instruction();
@@ -711,7 +764,7 @@ int main() {
     test_lddtx_instruction();
     test_ldstx_instruction();
     test_addix_instruction();
-    /* test_ldfx_instruction(); */
+    test_ldfx_instruction();
     /* test_ldbx_instruction(); */
     test_ldpix_instruction();
     test_ldxpi_instruction();

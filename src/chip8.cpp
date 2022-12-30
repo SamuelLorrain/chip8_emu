@@ -8,6 +8,20 @@ Chip8::Chip8(Memory* memory, Cpu* cpu):
     this->rng_engine.seed(rd());
 }
 
+Chip8::Chip8(Memory* memory, Cpu* cpu, Screen* screen):
+    memory(memory), cpu(cpu), screen(screen){
+    std::random_device rd;
+    this->rng_engine.seed(rd());
+}
+
+Chip8::Chip8() {
+    this->memory = new Memory();
+    this->cpu = new Cpu();
+    this->screen = new Screen();
+    std::random_device rd;
+    this->rng_engine.seed(rd());
+}
+
 void Chip8::next() {
     uint16_t opcode = this->fetch_opcode();
     Instruction* decoded_instruction = decode_instruction(opcode);
@@ -28,6 +42,10 @@ Cpu* Chip8::get_cpu() {
 
 Memory* Chip8::get_memory() {
     return this->memory;
+}
+
+Screen* Chip8::get_screen() {
+    return this->screen;
 }
 
 std::mt19937& Chip8::get_rng_engine() {
