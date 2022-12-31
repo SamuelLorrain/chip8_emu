@@ -7,7 +7,7 @@ Cpu::Cpu() {
     this->stack = std::stack<uint16_t>();
     this->delay_register = 0;
     this->sound_register = 0;
-    this->program_counter = 0;
+    this->program_counter = DEFAULT_PROGRAM_COUNTER_VALUE;
     this->i_register = 0;
 }
 

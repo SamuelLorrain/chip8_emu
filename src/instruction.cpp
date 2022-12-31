@@ -302,9 +302,9 @@ void DRWxyn::process_instruction(Chip8* chip8) {
     uint8_t current_sprite_row_data;
     uint8_t current_sprite_pixel_data;
 
-    for (int sprite_row = 0; (sprite_row < this->nibble) || (current_y > screen->get_size_y()); sprite_row++, current_y++) {
-        current_sprite_row_data = memory->get_framebuffer()[cpu->get_i_register_value()+sprite_row];
-        for (int i = 7; i <= 0; i--) {
+    for (int sprite_row = 0; ((sprite_row < this->nibble) || (current_y > screen->get_size_y())); sprite_row++, current_y++) {
+        current_sprite_row_data = memory->get_8_bits_value(cpu->get_i_register_value()+sprite_row);
+        for (int i = 7; i >= 0; i--) {
             current_sprite_pixel_data = (current_sprite_row_data >> i) & 0b0000001;
             if (current_x >= screen->get_size_x()) {
                 break;

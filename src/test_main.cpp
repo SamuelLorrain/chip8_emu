@@ -542,7 +542,38 @@ void test_rndxb_instruction() {
 }
 
 void test_drwxyn_instruction() {
-    assert(0 == 1);
+    Screen* screen = new Screen();
+    Cpu* cpu = new Cpu();
+    Memory* memory = new Memory();
+    Chip8* chip8 = new Chip8(memory, cpu, screen);
+    DRWxyn* drwxyn = new DRWxyn();
+
+    // single sprite line full
+    for(int i = 0; i < 8; i++) {
+        screen->get_framebuffer()[i] = 0;
+    }
+    for(int i = 0; i < 8; i++) {
+        screen->get_framebuffer()[screen->get_size_x()+i] = 0;
+    }
+    memory->set_8_bits_value(0x100, 0b11111111);
+    memory->set_8_bits_value(0x101, 0b11111111);
+    cpu->set_i_register_value(0x100);
+    cpu->get_general_registers()[0x0] = 0;
+    drwxyn->set_x(0);
+    drwxyn->set_y(0);
+    drwxyn->set_nibble(2);
+    drwxyn->process_instruction(chip8);
+    for(int i = 0; i < 8; i++) {
+        assert(screen->get_framebuffer()[i] == 1);
+        assert(screen->get_framebuffer()[screen->get_size_x()+i] == 1);
+    }
+    assert(screen->get_framebuffer()[9] == 0);
+
+    delete(screen);
+    delete(cpu);
+    delete(memory);
+    delete(chip8);
+    delete(drwxyn);
 }
 
 void test_skp_instruction() {
@@ -756,7 +787,7 @@ int main() {
     test_ldinnn_instruction();
     test_jp0nnn_instruction();
     /* test_rndxb_instruction(); */
-    /* test_drwxyn_instruction(); */
+    test_drwxyn_instruction();
     /* test_skp_instruction(); */
     /* test_sknp_instruction(); */
     test_ldxdt_instruction();

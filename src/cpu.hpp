@@ -6,6 +6,7 @@
 #include <cstdint>
 
 constexpr int REGISTER_COUNT = 16;
+constexpr int DEFAULT_PROGRAM_COUNTER_VALUE = 0x200;
 
 class Cpu {
     public:

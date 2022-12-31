@@ -14,11 +14,13 @@ class Chip8 {
         ~Chip8();
         void next();
         uint16_t fetch_opcode();
+        void load_rom(const char* file_path);
+
+
         Cpu* get_cpu();
         Memory* get_memory();
         Screen* get_screen();
         std::mt19937& get_rng_engine();
-
     private:
         Memory* memory;
         Cpu* cpu;

@@ -1,4 +1,6 @@
 #include <random>
+#include <fstream>
+#include <iterator>
 #include "instruction.hpp"
 #include "chip8.hpp"
 
@@ -15,6 +17,7 @@ Chip8::Chip8(Memory* memory, Cpu* cpu, Screen* screen):
 }
 
 Chip8::Chip8() {
+    // FIXME can cause leak
     this->memory = new Memory();
     this->cpu = new Cpu();
     this->screen = new Screen();
@@ -32,6 +35,18 @@ uint16_t Chip8::fetch_opcode() {
     return this->memory->get_16_bits_value(
         this->cpu->get_program_counter_value()
     );
+}
+
+// TODO maybe inject ifstream directly ?
+void Chip8::load_rom(const char* file_path) {
+    std::ifstream file(file_path, std::ios::binary);
+
+    int addr = DEFAULT_PROGRAM_COUNTER_VALUE;
+    std::istream_iterator<char> it(file);
+    for(; *it != file.eof(); it++) {
+        this->memory->set_8_bits_value(addr, *it);
+        addr++;
+    }
 }
 
 Chip8::~Chip8() {}
