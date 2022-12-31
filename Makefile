@@ -1,5 +1,5 @@
 CC = g++
-ARGUMENTS = -c --std=c++14 -Wall
+ARGUMENTS = -c --std=c++14 -Wall -lSDL2
 
 
 chip8: build/main.o build/chip8.o build/memory.o build/cpu.o build/instruction.o build/screen.o
@@ -28,6 +28,9 @@ build/instruction.o: src/instruction.cpp
 
 build/screen.o: src/screen.cpp
 	${CC} ${ARGUMENTS} src/screen.cpp -o build/screen.o
+
+build/sdl_engine.o: src/sdl_engine.cpp
+	${CC} ${ARGUMENTS} src/sdl_engine.cpp -o build/sdl_engine.o
 
 clean:
 	rm build/*.o && rm chip8 && rm test_chip8
