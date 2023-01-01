@@ -2,15 +2,27 @@
 #include <cstdlib>
 #include <vector>
 #include "sdl_engine.hpp"
+#include "screen.hpp"
 
-SDLEngine(Screen* screen, int pixel_size) {
+SDLEngine::SDLEngine(Screen* screen, int pixel_size) {
     if (pixel_size < 1) {
         throw "SDL engine error : pixel_size should be at least 1";
     }
+    this->on_color = new SDL_Color;
+    this->on_color->r = 0;
+    this->on_color->g = 0;
+    this->on_color->b = 0;
+    this->on_color->a = 0;
+    this->off_color = new SDL_Color;
+    this->off_color->r = 255;
+    this->off_color->g = 255;
+    this->off_color->b = 255;
+    this->off_color->a = 255;
+
     this->pixel_size = pixel_size;
     this->screen = screen;
-    this->buffer_size = screen->get_size_x()*this->pixel_size * screen->get_size_y()*this->pixel_size;
-    this->buffer = vector(this->buffer_size);
+    this->buffer_size = this->screen->get_size_x()*this->pixel_size * this->screen->get_size_y()*this->pixel_size;
+    this->buffer = std::vector<uint32_t>(this->buffer_size);
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         exit(-1);
@@ -19,23 +31,23 @@ SDLEngine(Screen* screen, int pixel_size) {
         "SDL Tutorial",
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
-        screen->get_size_x()*this->pixel_size,
-        screen->get_size_y()*this->pixel_size,
+        this->screen->get_size_x()*this->pixel_size,
+        this->screen->get_size_y()*this->pixel_size,
         SDL_WINDOW_SHOWN
     );
     this->renderer = SDL_CreateRenderer(this->window, -1, 0);
     this->texture = SDL_CreateTexture(
-        render,
+        renderer,
         SDL_PIXELFORMAT_RGB888, 
         SDL_TEXTUREACCESS_STATIC, // TODO test streaming
-        screen->get_size_x()*this->pixel_size,
-        screen->get_size_y()*this->pixel_size
+        this->screen->get_size_x()*this->pixel_size,
+        this->screen->get_size_y()*this->pixel_size
     );
 }
 
-SDLEngine(Screen* screen) : SDLEngine(screen, DEFAULT_PIXEL_SIZE) {}
+SDLEngine::SDLEngine(Screen* screen) : SDLEngine(screen, DEFAULT_PIXEL_SIZE) {}
 
-~SDLEngine() {
+SDLEngine::~SDLEngine() {
     SDL_DestroyTexture(this->texture);
     SDL_DestroyRenderer(this->renderer);
     SDL_DestroyWindow(this->window);
@@ -47,7 +59,7 @@ void SDLEngine::update_display() {
     SDL_UpdateTexture(
         this->texture,
         NULL,
-        this->buffer,
+        &this->buffer[0],
         this->buffer_size * sizeof(uint32_t)
     );
     // TODO maybe put this elsewhere
@@ -74,31 +86,30 @@ void SDLEngine::loop_until_quit() {
 
 void SDLEngine::update_buffer_with_screen() {
     auto framebuffer = this->screen->get_framebuffer();
-    int screen_size = this->screen->get_size();
     for(int y = 0; y < this->screen->get_size_y(); y++) {
         for(int x = 0; x < this->screen->get_size_x(); x++) {
-            if (framebuffer[(this->get_size_y()*y)+x] > 0) {
-                this->assign_pixel_buffer(x, y, ON_COLOR);
+            if (framebuffer[(this->screen->get_size_y()*y)+x] > 0) {
+                this->texture_pixel(x, y, this->on_color);
             } else {
-                this->assign_pixel_buffer(x, y, OFF_COLOR);
+                this->texture_pixel(x, y, this->off_color);
             }
         }
     }
     SDL_UpdateTexture(
         this->texture,
         NULL,
-        this->buffer,
+        &this->buffer[0],
         this->buffer_size * sizeof(uint32_t)
-    )
+    );
 }
 
-void SDLEngine::assign_pixel_buffer(int x, int y, SDL_Color* color) {
+void SDLEngine::texture_pixel(int x, int y, SDL_Color* color) {
     uint32_t integer_color = this->convert_sdl_color_to_uint32(color);
     int pixels_side_size = this->pixel_size / 2;
     int converted_x = x * pixels_side_size;
     int converted_y = y * pixels_side_size;
-    for(int i = 1; i <= pixels_size_size; i++) {
-        for(int j = 0; j < pixels_size_size; j++) {
+    for(int i = 1; i <= pixels_side_size; i++) {
+        for(int j = 0; j < pixels_side_size; j++) {
             this->buffer[
                 (this->screen->get_size_x() * (converted_y*i)) + (converted_x*j)
             ] = integer_color;

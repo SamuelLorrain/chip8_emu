@@ -1,12 +1,13 @@
 CC = g++
-ARGUMENTS = -c --std=c++14 -Wall -lSDL2
+ARGUMENTS = -c --std=c++14 -Wall 
+SDL_ARGS = `pkg-config --libs --cflags sdl2`
 
 
-chip8: build/main.o build/chip8.o build/memory.o build/cpu.o build/instruction.o build/screen.o
-	${CC} build/main.o build/chip8.o build/memory.o build/cpu.o build/instruction.o build/screen.o -o chip8
+chip8: build/main.o build/chip8.o build/memory.o build/cpu.o build/instruction.o build/screen.o build/sdl_engine.o
+	${CC} ${SDL_ARGS} build/main.o build/chip8.o build/memory.o build/cpu.o build/instruction.o build/screen.o build/sdl_engine.o -o chip8
 
-test: build/test_main.o build/chip8.o build/memory.o build/cpu.o build/instruction.o build/screen.o
-	${CC} build/test_main.o build/chip8.o build/memory.o build/cpu.o build/instruction.o build/screen.o -o test_chip8
+test: build/test_main.o build/chip8.o build/memory.o build/cpu.o build/instruction.o build/screen.o build/sdl_engine.o
+	${CC} ${SDL_ARGS} build/test_main.o build/chip8.o build/memory.o build/cpu.o build/instruction.o build/screen.o build/sdl_engine.o -o test_chip8
 
 build/test_main.o: src/main.cpp
 	${CC} ${ARGUMENTS} src/test_main.cpp -o build/test_main.o
@@ -30,7 +31,7 @@ build/screen.o: src/screen.cpp
 	${CC} ${ARGUMENTS} src/screen.cpp -o build/screen.o
 
 build/sdl_engine.o: src/sdl_engine.cpp
-	${CC} ${ARGUMENTS} src/sdl_engine.cpp -o build/sdl_engine.o
+	${CC} ${ARGUMENTS} ${SDL_ARGS} src/sdl_engine.cpp -o build/sdl_engine.o
 
 clean:
 	rm build/*.o && rm chip8 && rm test_chip8
