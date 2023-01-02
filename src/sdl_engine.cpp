@@ -28,18 +28,18 @@ SDLEngine::SDLEngine(Screen* screen, int pixel_size) {
         exit(-1);
     }
     this->window = SDL_CreateWindow(
-        "SDL Tutorial",
+        "Chip8 emu",
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
         this->screen->get_size_x()*this->pixel_size,
         this->screen->get_size_y()*this->pixel_size,
         SDL_WINDOW_SHOWN
     );
-    this->renderer = SDL_CreateRenderer(this->window, -1, 0);
+    this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED);
     this->texture = SDL_CreateTexture(
         renderer,
-        SDL_PIXELFORMAT_RGB888, 
-        SDL_TEXTUREACCESS_STATIC, // TODO test streaming
+        SDL_PIXELFORMAT_RGBA8888, 
+        SDL_TEXTUREACCESS_STREAMING,
         this->screen->get_size_x()*this->pixel_size,
         this->screen->get_size_y()*this->pixel_size
     );
@@ -51,6 +51,8 @@ SDLEngine::~SDLEngine() {
     SDL_DestroyTexture(this->texture);
     SDL_DestroyRenderer(this->renderer);
     SDL_DestroyWindow(this->window);
+    delete this->on_color;
+    delete this->off_color;
     SDL_Quit();
 }
 
@@ -63,25 +65,12 @@ void SDLEngine::update_display() {
         this->buffer_size * sizeof(uint32_t)
     );
     // TODO maybe put this elsewhere
-    SDL_RenderClear(this->renderer);
+    /* SDL_RenderClear(this->renderer); */
     SDL_RenderCopy(this->renderer, this->texture, NULL, NULL);
     SDL_RenderPresent(this->renderer);
 }
 
 void SDLEngine::loop_until_quit() {
-    bool quit = false;
-    SDL_Event event;
-    while (!quit)
-    {
-        SDL_WaitEvent(&event);
- 
-        switch (event.type)
-        {
-            case SDL_QUIT:
-                quit = true;
-                break;
-        }
-    }
 }
 
 void SDLEngine::update_buffer_with_screen() {
@@ -115,4 +104,11 @@ void SDLEngine::texture_pixel(int x, int y, SDL_Color* color) {
             ] = integer_color;
         }
     }
+}
+
+uint32_t SDLEngine::convert_sdl_color_to_uint32(SDL_Color* color) {
+    SDL_PixelFormat* pixel_format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888);
+    uint32_t pixel_value = SDL_MapRGBA(pixel_format, color->r, color->g, color->b, color->a);
+    SDL_FreeFormat(pixel_format);
+    return pixel_value;
 }

@@ -16,9 +16,7 @@ class SDLEngine {
         void loop_until_quit();
     private:
         void update_buffer_with_screen();
-        inline uint32_t convert_sdl_color_to_uint32(SDL_Color* color) {
-            return (color->a << 24) & (color->r << 16) & (color->g << 8) & (color->b);
-        }
+        uint32_t convert_sdl_color_to_uint32(SDL_Color* color);
         void texture_pixel(int x, int y, SDL_Color* color);
         int pixel_size;
         int buffer_size;
