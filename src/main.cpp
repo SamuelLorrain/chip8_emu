@@ -19,19 +19,20 @@ int main(int argc, char** argv) {
 
     chip8->load_rom(argv[1]);
 
-    for(;;) {
-        bool quit = false;
-        SDL_Event event;
-        while (!quit)
+    for(int i = 0; i < 64; i++) {
+        screen->on_pixel(i);
+    }
+    sdl_engine->update_display();
+
+    bool quit = false;
+    SDL_Event e;
+    while( !quit )
+    {
+        while( SDL_PollEvent( &e ) != 0 )
         {
-            chip8->next();
-            SDL_WaitEvent(&event);
-     
-            switch (event.type)
+            if( e.type == SDL_QUIT )
             {
-                case SDL_QUIT:
-                    quit = true;
-                    break;
+                quit = true;
             }
         }
     }

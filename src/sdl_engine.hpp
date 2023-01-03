@@ -5,7 +5,7 @@
 #include <vector>
 #include "screen.hpp"
 
-constexpr int DEFAULT_PIXEL_SIZE = 4;
+constexpr int DEFAULT_PIXEL_SIZE = 8;
 
 class SDLEngine {
     public:
@@ -15,15 +15,11 @@ class SDLEngine {
         void update_display();
         void loop_until_quit();
     private:
-        void update_buffer_with_screen();
-        uint32_t convert_sdl_color_to_uint32(SDL_Color* color);
-        void texture_pixel(int x, int y, SDL_Color* color);
+        void on_pixel(int x, int y);
+        void off_pixel(int x, int y);
         int pixel_size;
-        int buffer_size;
-        std::vector<uint32_t> buffer;
         SDL_Window* window;
         SDL_Renderer* renderer;
-        SDL_Texture* texture;
         SDL_Color* on_color;
         SDL_Color* off_color;
         Screen* screen;
