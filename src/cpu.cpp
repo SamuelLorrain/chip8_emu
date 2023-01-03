@@ -33,10 +33,6 @@ void Cpu::set_program_counter_value(uint16_t value) {
     this->program_counter = value;
 }
 
-void Cpu::inc_program_counter_value() {
-    this->program_counter++;
-}
-
 void Cpu::inc_program_counter_value(uint16_t value) {
     this->program_counter += value;
 }

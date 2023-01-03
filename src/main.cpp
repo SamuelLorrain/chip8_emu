@@ -19,15 +19,12 @@ int main(int argc, char** argv) {
 
     chip8->load_rom(argv[1]);
 
-    for(int i = 0; i < 64; i++) {
-        screen->on_pixel(i);
-    }
-    sdl_engine->update_display();
-
     bool quit = false;
     SDL_Event e;
     while( !quit )
     {
+        chip8->next();
+        sdl_engine->update_display();
         while( SDL_PollEvent( &e ) != 0 )
         {
             if( e.type == SDL_QUIT )
@@ -35,6 +32,7 @@ int main(int argc, char** argv) {
                 quit = true;
             }
         }
+        SDL_Delay(100);
     }
 
     delete memory;

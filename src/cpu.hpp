@@ -18,7 +18,6 @@ class Cpu {
 
         uint16_t get_program_counter_value();
         void set_program_counter_value(uint16_t value);
-        void inc_program_counter_value();
         void inc_program_counter_value(uint16_t value);
 
         uint16_t get_i_register_value();

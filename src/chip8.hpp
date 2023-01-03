@@ -26,6 +26,9 @@ class Chip8 {
         Cpu* cpu;
         Screen* screen;
         std::mt19937 rng_engine;
+        bool ownMemory;
+        bool ownCpu;
+        bool ownScreen;
 };
 
 #endif

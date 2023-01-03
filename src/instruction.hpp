@@ -11,6 +11,7 @@ class Instruction {
         uint16_t addr;
         int byte;
         int nibble;
+        bool has_jmp;
 
     public:
         Instruction();
@@ -20,6 +21,7 @@ class Instruction {
         Instruction* set_addr(int value);
         Instruction* set_byte(int value);
         Instruction* set_nibble(int value);
+        bool get_has_jmp();
         virtual void process_instruction(Chip8* chip8) = 0;
         void set_values_from_opcode(uint16_t opcode);
 };
@@ -262,6 +264,13 @@ class LDxpi : public Instruction {
     public:
         LDxpi();
         ~LDxpi();
+        void process_instruction(Chip8* chip8) override;
+};
+
+class IGNORE : public Instruction {
+    public:
+        IGNORE();
+        ~IGNORE();
         void process_instruction(Chip8* chip8) override;
 };
 

@@ -8,27 +8,55 @@ Chip8::Chip8(Memory* memory, Cpu* cpu):
     memory(memory), cpu(cpu) {
     std::random_device rd;
     this->rng_engine.seed(rd());
+    this->ownMemory = false;
+    this->ownCpu = false;
+    this->ownScreen = false;
 }
 
 Chip8::Chip8(Memory* memory, Cpu* cpu, Screen* screen):
     memory(memory), cpu(cpu), screen(screen){
     std::random_device rd;
     this->rng_engine.seed(rd());
+    this->ownMemory = false;
+    this->ownCpu = false;
+    this->ownScreen = false;
 }
 
 Chip8::Chip8() {
-    // FIXME can cause leak
     this->memory = new Memory();
     this->cpu = new Cpu();
     this->screen = new Screen();
+    // FIXME
+    // bad way of doing it, may use
+    // smart pointers later
+    this->ownMemory = true;
+    this->ownCpu = true;
+    this->ownScreen = true;
+
     std::random_device rd;
     this->rng_engine.seed(rd());
+}
+
+Chip8::~Chip8() {
+    // see Chip8() method, may change later
+    if (this->ownMemory) {
+        delete this->memory;
+    }
+    if (this->ownCpu) {
+        delete this->cpu;
+    }
+    if (this->ownScreen) {
+        delete this->screen;
+    }
 }
 
 void Chip8::next() {
     uint16_t opcode = this->fetch_opcode();
     Instruction* decoded_instruction = decode_instruction(opcode);
     decoded_instruction->process_instruction(this);
+    if (!decoded_instruction->get_has_jmp()) {
+        this->get_cpu()->inc_program_counter_value(2);
+    }
 }
 
 uint16_t Chip8::fetch_opcode() {
@@ -37,19 +65,19 @@ uint16_t Chip8::fetch_opcode() {
     );
 }
 
-// TODO maybe inject ifstream directly ?
 void Chip8::load_rom(const char* file_path) {
-    std::ifstream file(file_path, std::ios::binary);
-
+    std::ifstream fs;
+    fs.open(file_path, std::fstream::in | std::fstream::binary);
     int addr = DEFAULT_PROGRAM_COUNTER_VALUE;
-    std::istream_iterator<char> it(file);
-    for(; *it != file.eof(); it++) {
-        this->memory->set_8_bits_value(addr, *it);
+    char buffer = '\0';
+
+    while(!fs.eof()) {
+        fs.read(reinterpret_cast<char*>(&buffer), sizeof(buffer));
+        this->memory->set_8_bits_value(addr, buffer);
         addr++;
     }
+    fs.close();
 }
-
-Chip8::~Chip8() {}
 
 Cpu* Chip8::get_cpu() {
     return this->cpu;

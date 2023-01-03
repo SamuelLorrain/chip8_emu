@@ -17,6 +17,8 @@ class SDLEngine {
     private:
         void on_pixel(int x, int y);
         void off_pixel(int x, int y);
+        void change_pixel_color(int x, int y, SDL_Color* color);
+        void handle_sdl_error();
         int pixel_size;
         SDL_Window* window;
         SDL_Renderer* renderer;

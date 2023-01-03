@@ -9,14 +9,14 @@ SDLEngine::SDLEngine(Screen* screen, int pixel_size) {
         throw "SDL engine error : pixel_size should be at least 1";
     }
     this->on_color = new SDL_Color;
-    this->on_color->r = 255;
-    this->on_color->g = 0;
-    this->on_color->b = 0;
+    this->on_color->r = 155;
+    this->on_color->g = 155;
+    this->on_color->b = 185;
     this->on_color->a = 255;
     this->off_color = new SDL_Color;
-    this->off_color->r = 255;
-    this->off_color->g = 255;
-    this->off_color->b = 255;
+    this->off_color->r = 0;
+    this->off_color->g = 0;
+    this->off_color->b = 0;
     this->off_color->a = 0;
 
     this->pixel_size = pixel_size;
@@ -33,8 +33,18 @@ SDLEngine::SDLEngine(Screen* screen, int pixel_size) {
         this->screen->get_size_y()*this->pixel_size,
         SDL_WINDOW_SHOWN
     );
+    if(!this->window) {
+        printf("SDL window could not be created! SDL_Error: %s\n", SDL_GetError());
+        exit(-1);
+    }
     this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED);
-    SDL_RenderClear(this->renderer);
+    if(!this->renderer) {
+        printf("SDL renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+        exit(-1);
+    }
+    if(SDL_RenderClear(this->renderer)) {
+        this->handle_sdl_error();
+    }
 }
 
 SDLEngine::SDLEngine(Screen* screen) : SDLEngine(screen, DEFAULT_PIXEL_SIZE) {}
@@ -61,26 +71,31 @@ void SDLEngine::update_display() {
 }
 
 void SDLEngine::on_pixel(int x, int y) {
-    SDL_SetRenderDrawColor(
-            this->renderer,
-            this->on_color->r,
-            this->on_color->g,
-            this->on_color->b,
-            this->on_color->a
-    );
-    SDL_Rect rect = {x*this->pixel_size, y*this->pixel_size, this->pixel_size, this->pixel_size};
-    SDL_RenderFillRect(this->renderer, &rect);
-
+    this->change_pixel_color(x,y,this->on_color);
 }
 
 void SDLEngine::off_pixel(int x, int y) {
-    SDL_SetRenderDrawColor(
-            this->renderer,
-            this->off_color->r,
-            this->off_color->g,
-            this->off_color->b,
-            this->off_color->a
-    );
+    this->change_pixel_color(x,y,this->off_color);
+}
+
+void SDLEngine::change_pixel_color(int x, int y, SDL_Color* color) {
+    if(SDL_SetRenderDrawColor(
+        this->renderer,
+        color->r,
+        color->g,
+        color->b,
+        color->a
+    )) {
+        this->handle_sdl_error();
+    }
     SDL_Rect rect = {x*this->pixel_size, y*this->pixel_size, this->pixel_size, this->pixel_size};
-    SDL_RenderFillRect(this->renderer, &rect);
+    if(SDL_RenderFillRect(this->renderer, &rect)) {
+        this->handle_sdl_error();
+    }
+}
+
+void SDLEngine::handle_sdl_error() {
+    printf("SDL Error : %s\n", SDL_GetError());
+    delete this;
+    exit(1);
 }

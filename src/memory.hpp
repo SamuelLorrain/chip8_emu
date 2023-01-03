@@ -17,7 +17,7 @@ class Memory {
         uint16_t get_16_bits_value(uint16_t addr);
         void set_8_bits_value(uint16_t addr, uint8_t value);
         void set_16_bits_value(uint16_t addr, uint16_t value);
-    private:
+    /* private: */
         std::vector<uint8_t> memory_array;
         void assign_font();
 };

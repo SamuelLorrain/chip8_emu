@@ -1,7 +1,7 @@
 #include "instruction.hpp"
 
 Instruction::Instruction() :
-    x(0), y(0), addr(0), byte(0), nibble(0)
+    x(0), y(0), addr(0), byte(0), nibble(0), has_jmp(false)
 {}
 
 Instruction::~Instruction() {}
@@ -31,6 +31,10 @@ Instruction* Instruction::set_nibble(int value) {
     return this;
 }
 
+bool Instruction::get_has_jmp() {
+    return this->has_jmp;
+}
+
 void Instruction::set_values_from_opcode(uint16_t opcode) {
     this->set_x((opcode & 0x0f00) >> 8)
         ->set_y((opcode & 0x00f0) >> 4)
@@ -42,6 +46,7 @@ void Instruction::set_values_from_opcode(uint16_t opcode) {
 Instruction* dispatch_instruction_type(uint16_t opcode) {
     if (opcode == 0x00e0) { return new CLS(); }
     else if (opcode == 0x00ee) { return new RET(); }
+    else if ((opcode & 0xf000) == 0x0000) { return new IGNORE(); }
     else if ((opcode & 0xf000) == 0x1000) { return new JPnnn(); }
     else if ((opcode & 0xf000) == 0x2000) { return new CALLnnn(); }
     else if ((opcode & 0xf000) == 0x3000) { return new SExb(); }
@@ -64,7 +69,7 @@ Instruction* dispatch_instruction_type(uint16_t opcode) {
     else if ((opcode & 0xf000) == 0xa000) { return new LDinnn(); }
     else if ((opcode & 0xf000) == 0xb000) { return new JP0nnn(); }
     else if ((opcode & 0xf000) == 0xc000) { return new RNDxb(); }
-    else if ((opcode & 0xf000) == 0xc000) { return new DRWxyn(); }
+    else if ((opcode & 0xf000) == 0xd000) { return new DRWxyn(); }
     else if ((opcode & 0xf0ff) == 0xe09e) { return new SKPx(); }
     else if ((opcode & 0xf0ff) == 0xe0a1) { return new SKNPx(); }
     else if ((opcode & 0xf0ff) == 0xf007) { return new LDxdt(); }
@@ -77,7 +82,8 @@ Instruction* dispatch_instruction_type(uint16_t opcode) {
     else if ((opcode & 0xf0ff) == 0xf055) { return new LDpix(); }
     else if ((opcode & 0xf0ff) == 0xf065) { return new LDxpi(); }
     else {
-        throw "ErrorUnknownInstruction";
+        printf("UNKNOWN INSTRUCTION : 0x%x\n", opcode);
+        exit(-1);
     }
 }
 
@@ -108,6 +114,7 @@ JPnnn::~JPnnn() {}
 void JPnnn::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     cpu->set_program_counter_value(this->addr);
+    this->has_jmp = true;
 }
 
 CALLnnn::CALLnnn() : Instruction() {}
@@ -116,6 +123,7 @@ void CALLnnn::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     cpu->push_stack(cpu->get_program_counter_value());
     cpu->set_program_counter_value(this->addr);
+    this->has_jmp = true;
 }
 
 SExb::SExb() : Instruction() {}
@@ -263,6 +271,7 @@ void SNExy::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     if (cpu->get_general_registers()[this->x] != cpu->get_general_registers()[this->y]) {
         cpu->inc_program_counter_value(2);
+        this->has_jmp = true;
     }
 }
 
@@ -280,6 +289,7 @@ void JP0nnn::process_instruction(Chip8* chip8) {
     cpu->set_program_counter_value(
         cpu->get_general_registers()[0x0] + this->addr
     );
+    this->has_jmp = true;
 }
 
 RNDxb::RNDxb() : Instruction() {}
@@ -389,6 +399,7 @@ void LDfx::process_instruction(Chip8* chip8) {
 LDbx::LDbx() : Instruction() {}
 LDbx::~LDbx() {}
 void LDbx::process_instruction(Chip8* chip8) {
+    // TODO TO IMPLEMENT
 }
 
 LDpix::LDpix() : Instruction() {}
@@ -413,4 +424,9 @@ void LDxpi::process_instruction(Chip8* chip8) {
         cpu->get_general_registers()[i] = 
             memory->get_8_bits_value(cpu->get_i_register_value() + i);
     }
+}
+
+IGNORE::IGNORE() : Instruction() {}
+IGNORE::~IGNORE() {}
+void IGNORE::process_instruction(Chip8* chip8) {
 }
