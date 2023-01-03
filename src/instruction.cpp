@@ -399,7 +399,13 @@ void LDfx::process_instruction(Chip8* chip8) {
 LDbx::LDbx() : Instruction() {}
 LDbx::~LDbx() {}
 void LDbx::process_instruction(Chip8* chip8) {
-    // TODO TO IMPLEMENT
+    Cpu* cpu = chip8->get_cpu();
+    Memory* memory = chip8->get_memory();
+    uint8_t x_register_value = cpu->get_general_registers()[this->x];
+    uint16_t i_register_value = cpu->get_i_register_value();
+    memory->set_8_bits_value(i_register_value, x_register_value / 100);
+    memory->set_8_bits_value(i_register_value+1, (x_register_value / 10) % 10);
+    memory->set_8_bits_value(i_register_value+2, x_register_value % 10);
 }
 
 LDpix::LDpix() : Instruction() {}
