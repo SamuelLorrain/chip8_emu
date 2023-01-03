@@ -1,4 +1,5 @@
 #include "instruction.hpp"
+#include "sdl_engine.hpp"
 
 Instruction::Instruction() :
     x(0), y(0), addr(0), byte(0), nibble(0), has_jmp(false)
@@ -337,13 +338,30 @@ void DRWxyn::process_instruction(Chip8* chip8) {
 SKPx::SKPx() : Instruction() {}
 SKPx::~SKPx() {}
 void SKPx::process_instruction(Chip8* chip8) {
-    // TODO TO IMPLEMENT
+    SDL_Event e;
+    while( SDL_PollEvent(&e) != 0) {
+        uint32_t event_value = convert_sdl_key_event_to_int(&e);
+        Cpu* cpu = chip8->get_cpu();
+        if (event_value == cpu->get_general_registers()[this->x]) {
+            cpu->inc_program_counter_value(2);
+        }
+    }
+
 }
 
 SKNPx::SKNPx() : Instruction() {}
 SKNPx::~SKNPx() {}
 void SKNPx::process_instruction(Chip8* chip8) {
-    // TODO TO IMPLEMENT
+    SDL_Event e;
+    Cpu* cpu = chip8->get_cpu();
+    while( SDL_PollEvent(&e) != 0) {
+        uint32_t event_value = convert_sdl_key_event_to_int(&e);
+        if (event_value != cpu->get_general_registers()[this->x]) {
+            cpu->inc_program_counter_value(2);
+            return;
+        }
+    }
+    cpu->inc_program_counter_value(2);
 }
 
 LDxdt::LDxdt() : Instruction() {}
@@ -356,7 +374,14 @@ void LDxdt::process_instruction(Chip8* chip8) {
 LDxk::LDxk() : Instruction() {}
 LDxk::~LDxk() {}
 void LDxk::process_instruction(Chip8* chip8) {
-    // TODO TO IMPLEMENT
+    SDL_Event e;
+    Cpu* cpu = chip8->get_cpu();
+    while(1) {
+        if (SDL_PollEvent(&e) != 0) {
+            cpu->get_general_registers()[this->x] = convert_sdl_key_event_to_int(&e);
+            break;
+        }
+    }
 }
 
 LDdtx::LDdtx() : Instruction() {}

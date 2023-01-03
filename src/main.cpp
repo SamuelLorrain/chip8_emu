@@ -24,7 +24,6 @@ int main(int argc, char** argv) {
     while( !quit )
     {
         chip8->next();
-        sdl_engine->update_display();
         while( SDL_PollEvent( &e ) != 0 )
         {
             if( e.type == SDL_QUIT )
@@ -32,6 +31,7 @@ int main(int argc, char** argv) {
                 quit = true;
             }
         }
+        sdl_engine->update_display();
         SDL_Delay(100);
     }
 

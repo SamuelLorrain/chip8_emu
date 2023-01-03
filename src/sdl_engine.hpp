@@ -27,5 +27,6 @@ class SDLEngine {
         Screen* screen;
 };
 
+uint32_t convert_sdl_key_event_to_int(SDL_Event* e);
 
 #endif

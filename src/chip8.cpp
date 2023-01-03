@@ -38,7 +38,7 @@ Chip8::Chip8() {
 }
 
 Chip8::~Chip8() {
-    // see Chip8() method, may change later
+    // see Chip8() constructor, may change later
     if (this->ownMemory) {
         delete this->memory;
     }
