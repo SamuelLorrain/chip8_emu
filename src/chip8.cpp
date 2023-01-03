@@ -51,7 +51,11 @@ Chip8::~Chip8() {
 }
 
 void Chip8::next() {
+    if (this->waiting) {
+        return;
+    }
     uint16_t opcode = this->fetch_opcode();
+    Cpu* cpu = this->get_cpu();
     Instruction* decoded_instruction = decode_instruction(opcode);
     decoded_instruction->process_instruction(this);
     if (!decoded_instruction->get_has_jmp()) {

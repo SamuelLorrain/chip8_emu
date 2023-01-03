@@ -19,20 +19,53 @@ int main(int argc, char** argv) {
 
     chip8->load_rom(argv[1]);
 
+    uint8_t keymap[16] = {
+        SDLK_1,
+        SDLK_2,
+        SDLK_3,
+        SDLK_4,
+        SDLK_a,
+        SDLK_z,
+        SDLK_e,
+        SDLK_r,
+        SDLK_q,
+        SDLK_s,
+        SDLK_d,
+        SDLK_f,
+        SDLK_w,
+        SDLK_x,
+        SDLK_c,
+        SDLK_v,
+    };
+
     bool quit = false;
     SDL_Event e;
     while( !quit )
     {
         chip8->next();
-        while( SDL_PollEvent( &e ) != 0 )
+        while(SDL_PollEvent( &e ) != 0)
         {
-            if( e.type == SDL_QUIT )
+            if(e.type == SDL_QUIT)
             {
                 quit = true;
             }
+            if(e.type == SDL_KEYDOWN) {
+                for (int i = 0; i < 16; ++i) {
+                    if (e.key.keysym.sym == keymap[i]) {
+                        chip8->get_keys()[i] = 1;
+                    }
+                }
+            }
+            if(e.type == SDL_KEYUP) {
+                for (int i = 0; i < 16; ++i) {
+                    if (e.key.keysym.sym == keymap[i]) {
+                        chip8->get_keys()[i] = 0;
+                    }
+                }
+            }
         }
         sdl_engine->update_display();
-        SDL_Delay(100);
+        SDL_Delay(10);
     }
 
     delete memory;

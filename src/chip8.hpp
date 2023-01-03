@@ -15,12 +15,15 @@ class Chip8 {
         void next();
         uint16_t fetch_opcode();
         void load_rom(const char* file_path);
-
+        inline bool* get_keys(){
+            return this->keys;
+        }
 
         Cpu* get_cpu();
         Memory* get_memory();
         Screen* get_screen();
         std::mt19937& get_rng_engine();
+        bool waiting = false;
     private:
         Memory* memory;
         Cpu* cpu;
@@ -29,6 +32,7 @@ class Chip8 {
         bool ownMemory;
         bool ownCpu;
         bool ownScreen;
+        bool keys[16] = {0};
 };
 
 #endif
