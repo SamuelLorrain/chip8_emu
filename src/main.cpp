@@ -39,17 +39,23 @@ int main(int argc, char** argv) {
     };
 
     bool quit = false;
+    bool advance_debug = false;
+    bool debug = false;
     SDL_Event e;
-    while( !quit )
-    {
-        chip8->next();
-        while(SDL_PollEvent( &e ) != 0)
-        {
-            if(e.type == SDL_QUIT)
-            {
+    while(!quit) {
+        if(debug && advance_debug) {
+            chip8->next();
+        } else if (!debug) {
+            chip8->next();
+        }
+        while(SDL_PollEvent( &e ) != 0) {
+            if(e.type == SDL_QUIT) {
                 quit = true;
             }
             if(e.type == SDL_KEYDOWN) {
+                if (e.key.keysym.sym == SDLK_RETURN) {
+                    advance_debug = true;
+                }
                 for (int i = 0; i < 16; ++i) {
                     if (e.key.keysym.sym == keymap[i]) {
                         chip8->get_keys()[i] = 1;
@@ -57,6 +63,9 @@ int main(int argc, char** argv) {
                 }
             }
             if(e.type == SDL_KEYUP) {
+                if (e.key.keysym.sym == SDLK_RETURN) {
+                    advance_debug = false;
+                }
                 for (int i = 0; i < 16; ++i) {
                     if (e.key.keysym.sym == keymap[i]) {
                         chip8->get_keys()[i] = 0;
@@ -65,7 +74,7 @@ int main(int argc, char** argv) {
             }
         }
         sdl_engine->update_display();
-        SDL_Delay(10);
+        SDL_Delay(5);
     }
 
     delete memory;

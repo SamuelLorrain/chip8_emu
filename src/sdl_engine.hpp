@@ -5,7 +5,7 @@
 #include <vector>
 #include "screen.hpp"
 
-constexpr int DEFAULT_PIXEL_SIZE = 8;
+constexpr int DEFAULT_PIXEL_SIZE = 16;
 
 class SDLEngine {
     public:

@@ -364,11 +364,12 @@ LDxk::LDxk() : Instruction() {}
 LDxk::~LDxk() {}
 void LDxk::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
-    chip8->waiting = true;
+    this->has_jmp = true;
     for (int i = 0; i < 16; ++i) {
         if (chip8->get_keys()[i]) {
             cpu->get_general_registers()[this->x] = i;
-            chip8->waiting = false;
+            this->has_jmp = false;
+            break;
         }
     }
 }
