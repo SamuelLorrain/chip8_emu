@@ -54,12 +54,20 @@ void Cpu::set_delay_register_value(uint16_t value) {
     this->delay_register = value;
 }
 
+void Cpu::dec_delay_register_value() {
+    this->delay_register--;
+}
+
 uint16_t Cpu::get_sound_register_value() {
     return this->sound_register;
 }
 
 void Cpu::set_sound_register_value(uint16_t value) {
     this->sound_register = value;
+}
+
+void Cpu::dec_sound_register_value() {
+    this->sound_register--;
 }
 
 Cpu::~Cpu() {}

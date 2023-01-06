@@ -25,9 +25,11 @@ class Cpu {
 
         uint16_t get_delay_register_value();
         void set_delay_register_value(uint16_t value);
+        void dec_delay_register_value();
 
         uint16_t get_sound_register_value();
         void set_sound_register_value(uint16_t value);
+        void dec_sound_register_value();
 
     private:
         std::vector<uint8_t> general_registers;

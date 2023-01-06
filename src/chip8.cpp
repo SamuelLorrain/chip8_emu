@@ -58,6 +58,12 @@ void Chip8::next() {
     Cpu* cpu = this->get_cpu();
     Instruction* decoded_instruction = decode_instruction(opcode);
     decoded_instruction->process_instruction(this);
+    if (this->get_cpu()->get_delay_register_value()) {
+        this->get_cpu()->dec_delay_register_value();
+    }
+    if (this->get_cpu()->get_sound_register_value()) {
+        this->get_cpu()->dec_sound_register_value();
+    }
     if (!decoded_instruction->get_has_jmp()) {
         this->get_cpu()->inc_program_counter_value(2);
     }
