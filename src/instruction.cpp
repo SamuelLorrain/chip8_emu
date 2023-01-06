@@ -97,6 +97,7 @@ Instruction* decode_instruction(uint16_t opcode) {
 CLS::CLS() : Instruction() {}
 CLS::~CLS() {}
 void CLS::process_instruction(Chip8* chip8) {
+    chip8->should_refresh = true;
     Screen* screen = chip8->get_screen();
     for(int i = 0; i < screen->get_size(); i++) {
         screen->off_pixel(i);
@@ -303,6 +304,7 @@ void RNDxb::process_instruction(Chip8* chip8) {
 DRWxyn::DRWxyn() : Instruction() {}
 DRWxyn::~DRWxyn() {}
 void DRWxyn::process_instruction(Chip8* chip8) {
+    chip8->should_refresh = true;
     Cpu* cpu = chip8->get_cpu();
     Memory* memory = chip8->get_memory();
     Screen* screen = chip8->get_screen();
@@ -405,7 +407,7 @@ LDfx::~LDfx() {}
 void LDfx::process_instruction(Chip8* chip8) {
     Cpu* cpu = chip8->get_cpu();
     uint8_t x_register_value = cpu->get_general_registers()[this->x];
-    if (x_register_value > 9) {
+    if (x_register_value > 0xf) {
         return;
     }
     cpu->set_i_register_value(BEGIN_FONT_ARRAY_ADDR+(SPRITE_SIZE*x_register_value));

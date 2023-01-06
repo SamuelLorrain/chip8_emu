@@ -55,7 +55,6 @@ void Chip8::next() {
         return;
     }
     uint16_t opcode = this->fetch_opcode();
-    Cpu* cpu = this->get_cpu();
     Instruction* decoded_instruction = decode_instruction(opcode);
     decoded_instruction->process_instruction(this);
     if (this->get_cpu()->get_delay_register_value()) {

@@ -73,8 +73,11 @@ int main(int argc, char** argv) {
                 }
             }
         }
-        sdl_engine->update_display();
-        SDL_Delay(5);
+        if (chip8->should_refresh) {
+            sdl_engine->update_display();
+            chip8->should_refresh = false;
+        }
+        SDL_Delay(1);
     }
 
     delete memory;

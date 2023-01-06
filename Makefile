@@ -1,6 +1,6 @@
 CC = g++
 SDL_ARGS = `pkg-config --libs --cflags sdl2`
-ARGUMENTS = --std=c++14 -Wall ${SDL_ARGS}
+ARGUMENTS = -g --std=c++14 -Wall ${SDL_ARGS}
 
 
 chip8: build/main.o build/chip8.o build/memory.o build/cpu.o build/instruction.o build/screen.o build/sdl_engine.o

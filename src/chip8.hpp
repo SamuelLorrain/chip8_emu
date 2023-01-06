@@ -24,6 +24,7 @@ class Chip8 {
         Screen* get_screen();
         std::mt19937& get_rng_engine();
         bool waiting = false;
+        bool should_refresh = false;
     private:
         Memory* memory;
         Cpu* cpu;
